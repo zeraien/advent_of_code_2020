@@ -1,42 +1,56 @@
+import re
 from collections import OrderedDict
 from collections import Counter
-from shared import load_file
+from dataclasses import dataclass
 
-def process_policy(policy):
-	n_range, letter = policy.split(" ")
-	n_range = [int(v) for v in n_range.split("-")]
-	return n_range, letter
+@dataclass
+class Line:
+	lower:int
+	upper:int
+	char:str
+	passwd:str
 
-def validate2(policy, word):
-	n_range, letter = process_policy(policy)
+def process_line(line):
+	match = re.match(r"^(\d+)-(\d+) ([a-z]): ([a-z]+)$", line)
+	if match:
+		groups = match.groups()
+		return Line(lower=int(groups[0]), upper=int(groups[1]), char=groups[2], passwd=groups[3])
+	raise ArgumentError("Invalid line: %s"%line)
+
+def load_file():
+	lines = []
+	with open("day2.txt","r") as f:
+		lines = [process_line(line) for line in f]
+	return lines
+
+def validate2(line):
+	n_range = [line.lower,line.upper]
 	def _try(x):
-		try:
-			return word[n_range[x]-1]==letter and 1 or 0
-		except IndexError:
-			return 0
+		return line.passwd[n_range[x]-1]==line.char and 1 or 0
 	valid = _try(0)+_try(1) == 1
 	#print(valid, word, policy)
 	return valid
 
-def validate1(policy, word):
-	n_range, letter = process_policy(policy)
-	counter = Counter(word)
-	valid = letter in counter and counter[letter]>=n_range[0] and counter[letter]<=n_range[1]
+def validate1(line):
+	n_range = [line.lower,line.upper]
+	counter = Counter(line.passwd)
+	valid = line.char in counter and n_range[0]<=counter[line.char]<=n_range[1]
 	#print(valid, word, policy, counter)
 	return valid
 
 def run():
 	# part 1
 	count1 = 0
-	for k,v in load_file("day2.json"):
-		if validate1(k,v):
+	lines = load_file()
+	for line in lines:
+		if validate1(line):
 			count1+=1
 	print("Part 1:",count1)
 
 	# part 2
 	count2 = 0
-	for k,v in load_file("day2.json"):
-		if validate2(k,v):
+	for line in lines:
+		if validate2(line):
 			count2+=1
 	print('Part 2:', count2)
 
