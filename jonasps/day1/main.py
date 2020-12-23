@@ -9,8 +9,6 @@ try:
                         for num_c in z:
                             if int(num_a) + int(num_b) + int(num_c) == 2020:
                                 print(int(num_a) * int(num_b) * int(num_c))
-                                x.close()
-                                y.close()
-                                z.close()
+
 except ValueError:
     print('done')
