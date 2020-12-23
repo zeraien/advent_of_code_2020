@@ -21,19 +21,13 @@ def load_file():
 	return bags, bags_with_counts
 
 
-def _recursive(active_bag, bags, collection):
+def count_containers(active_bag, bags):
+	collection = set()
 	if active_bag in bags:
 		for outer_bag in bags[active_bag]:
 			collection.add(outer_bag)
-			_recursive(outer_bag,
-			 	bags=bags, 
-			 	collection=collection)
-
-def count_containers(bags):
-	collection = set()
-	_recursive(mybag, bags=bags, collection=collection)
-	return len(collection)
-
+			collection |= count_containers(outer_bag, bags=bags)
+	return collection
 def _recursive_bag_counter(active_bag, bags):
 	count = 0
 	if active_bag in bags:
@@ -45,7 +39,8 @@ def _recursive_bag_counter(active_bag, bags):
 
 def run():
 	bags, bags_with_counts = load_file()
-	color_count = count_containers(bags)
+	color_count = len(count_containers(mybag, bags))
+
 	print('part 1', color_count)
 	print('part 2', _recursive_bag_counter(mybag, bags_with_counts))
 
