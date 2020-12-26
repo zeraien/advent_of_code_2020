@@ -21,8 +21,6 @@ class Interpreter:
         else:
             self.line_number = self.line_number + value -1
         
-
-
     def execute(self, part):
         if self.line_number > self.code_lines:
             print('Part 2 ->', self.accumulator)
@@ -34,7 +32,7 @@ class Interpreter:
 
         if self.line_number in self.line_numbers_visited:
             if part == 'part1':
-                print("Part 1 -> ", self.accumulator)
+                print('Part 1 ->', self.accumulator)
             self.done = True 
         else:
            self.line_numbers_visited.append(self.line_number)
@@ -44,7 +42,6 @@ class Interpreter:
         elif instruction == 'jmp':
             self.jmp(operator, int(value))
         self.line_number += 1
-
 
     def run(self, part):
         while not self.done:
