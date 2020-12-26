@@ -51,7 +51,6 @@ class Interpreter:
             self.execute(part)
 
 if __name__ == "__main__":
-    line_checker = 0
     with open('day8.txt') as file:
         code = file.readlines()
         engine = Interpreter(code)
@@ -69,7 +68,6 @@ if __name__ == "__main__":
                     code[i] = code[i].replace('nop', 'jmp')
                     engine = Interpreter(code)
                     engine.run('part2')
-                line_checker += 1
         except IndexError:
             print('Program finished')
     
