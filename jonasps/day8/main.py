@@ -1,15 +1,13 @@
 
-#part 1
-
+#part 1 and 2
 class Interpreter:
-    def __init__(self, file_name):
+    def __init__(self, code):
         self.line_numbers_visited = []
         self.accumulator = 0
-        self.line_number = 1
-        self.file_name = file_name
+        self.line_number = 0
         self.done = False
-        self.file = []
-        self.file_length = 0
+        self.code = code
+        self.code_lines = len(code) -1
 
     def acc(self, operator, value):
         if operator == '-':
@@ -25,14 +23,18 @@ class Interpreter:
         
 
 
-    def execute(self):
-        # if self.line_number > self.file_length:
-        #     print("Part 2 -> ", self.accumulator)
-        #     self.done = True
+    def execute(self, part):
+        if self.line_number > self.code_lines:
+            print('Part 2 ->', self.accumulator)
+            self.done = True
+        
+        instruction, values = self.code[self.line_number].strip().split(' ')
+        operator = values[0]
+        value = int(values[1:])
 
-        instruction, operator, value = self.file[self.line_number -1].strip().split(' ')
         if self.line_number in self.line_numbers_visited:
-            print("Part 1 -> ", self.accumulator)
+            if part == 'part1':
+                print("Part 1 -> ", self.accumulator)
             self.done = True 
         else:
            self.line_numbers_visited.append(self.line_number)
@@ -41,18 +43,33 @@ class Interpreter:
             self.acc(operator, int(value))
         elif instruction == 'jmp':
             self.jmp(operator, int(value))
-        # elif instruction == 'noop':
         self.line_number += 1
 
 
-    def run(self):
-        with open(self.file_name) as file:
-            self.file = file.readlines()
-            self.file_length = len(self.file)
-            while not self.done:
-                self.execute()
+    def run(self, part):
+        while not self.done:
+            self.execute(part)
 
 if __name__ == "__main__":
-    engine = Interpreter('day8.txt')
-    engine.run()
+    line_checker = 0
+    with open('day8.txt') as file:
+        code = file.readlines()
+        engine = Interpreter(code)
+        engine.run('part1')
+
+    for i in range(0, len(code)):
+        try:
+            with open('day8.txt') as file:
+                code = file.readlines()
+                if 'jmp' in code[i]:
+                    code[i] = code[i].replace('jmp', 'nop')
+                    engine = Interpreter(code)
+                    engine.run('part2')
+                elif 'nop' in code[i]:
+                    code[i] = code[i].replace('nop', 'jmp')
+                    engine = Interpreter(code)
+                    engine.run('part2')
+                line_checker += 1
+        except IndexError:
+            print('Program finished')
     
